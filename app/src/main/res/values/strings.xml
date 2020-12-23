@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Book Store App</string>
+    <string name="InvalidName">Do not leave it empty !!!</string>
+    <string name="InvalidUsername">Should be more than 6 characters</string>
+</resources>
