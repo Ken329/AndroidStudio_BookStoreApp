@@ -51,28 +51,37 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String myUsername = username.getText().toString();
                 String myPassword = password.getText().toString();
-                Query query = FirebaseDatabase.getInstance().getReference("user")
-                        .orderByChild("username")
-                        .equalTo(myUsername);
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            String dataPassword = snapshot.child(myUsername).child("password").getValue().toString();
-                            if(dataPassword.equals(myPassword)){
-                                Toast.makeText(MainActivity.this, "Successful login", Toast.LENGTH_SHORT).show();
+                if(myUsername.equals("admin")){
+                    if(myPassword.equals("admin")){
+                        Intent intent = new Intent(v.getContext(), MainAdminPage.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "Wrong admin password", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Query query = FirebaseDatabase.getInstance().getReference("user")
+                            .orderByChild("username")
+                            .equalTo(myUsername);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                String dataPassword = snapshot.child(myUsername).child("password").getValue().toString();
+                                if(dataPassword.equals(myPassword)){
+                                    Toast.makeText(MainActivity.this, "Successful login", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    password.setError("Wrong password");
+                                }
                             }else{
-                                password.setError("Wrong password");
+                                username.setError("Invalid username");
                             }
-                        }else{
-                            username.setError("Invalid username");
                         }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
         });
         signUp.setOnClickListener(new View.OnClickListener() {
