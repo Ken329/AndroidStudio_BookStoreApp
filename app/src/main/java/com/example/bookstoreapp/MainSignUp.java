@@ -86,11 +86,13 @@ public class MainSignUp extends AppCompatActivity implements PopupMenu.OnMenuIte
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if(snapshot.exists()){
-                                Toast.makeText(MainSignUp.this, "Username appeared, try aagin", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainSignUp.this, "Username appeared, try again", Toast.LENGTH_LONG).show();
                             }else{
                                 UserDetail user = new UserDetail(myUsername, myPassword, mySurname, myName, myPhone, myAge, myGender);
                                 ref = FirebaseDatabase.getInstance().getReference("user");
                                 ref.child(myUsername).setValue(user);
+                                ref = FirebaseDatabase.getInstance().getReference("wishlist");
+                                ref.child(myUsername).child("username").setValue(myUsername);
                                 Toast.makeText(MainSignUp.this, "Successful Created", Toast.LENGTH_LONG).show();
                                 goBack();
                             }

@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
                             if(snapshot.exists()){
                                 String dataPassword = snapshot.child(myUsername).child("password").getValue().toString();
                                 if(dataPassword.equals(myPassword)){
+                                    Intent intent = new Intent(v.getContext(), MainUser.class);
+                                    intent.putExtra("username", myUsername);
+                                    startActivity(intent);
                                     Toast.makeText(MainActivity.this, "Successful login", Toast.LENGTH_SHORT).show();
                                 }else{
                                     password.setError("Wrong password");
