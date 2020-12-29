@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookStoreApp">
-        <activity android:name=".MainWishList"></activity>
+        <activity android:name=".MainBorrow"></activity>
+        <activity android:name=".MainWishList" />
         <activity android:name=".MainUser" />
         <activity android:name=".MainAdminAdd" />
         <activity android:name=".MainAdminPage" />

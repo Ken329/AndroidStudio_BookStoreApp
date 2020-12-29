@@ -91,8 +91,6 @@ public class MainSignUp extends AppCompatActivity implements PopupMenu.OnMenuIte
                                 UserDetail user = new UserDetail(myUsername, myPassword, mySurname, myName, myPhone, myAge, myGender);
                                 ref = FirebaseDatabase.getInstance().getReference("user");
                                 ref.child(myUsername).setValue(user);
-                                ref = FirebaseDatabase.getInstance().getReference("wishlist");
-                                ref.child(myUsername).child("username").setValue(myUsername);
                                 Toast.makeText(MainSignUp.this, "Successful Created", Toast.LENGTH_LONG).show();
                                 goBack();
                             }

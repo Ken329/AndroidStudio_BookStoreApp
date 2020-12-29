@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,12 +34,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
-public class MainUser extends AppCompatActivity {
+public class MainUser extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
     TextView name;
     ListView list;
     LinearLayout detail, borrow, wishlist;
 
     String myUser;
+    int myposition;
+    String action;
     ArrayList<String> bookName, bookDate, bookAuthor, bookBorrow;
     DatabaseReference ref;
     @Override
@@ -103,22 +107,64 @@ public class MainUser extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        borrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), MainBorrow.class);
+                intent.putExtra("username", myUser);
+                startActivity(intent);
+            }
+        });
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BookDetail book = new BookDetail(bookName.get(position), bookAuthor.get(position), bookDate.get(position), bookBorrow.get(position));
-;               ref = FirebaseDatabase.getInstance().getReference("wishlist").child(myUser);
-                ref.child(bookName.get(position)).setValue(book);
-                Toast.makeText(MainUser.this, bookName.get(position) + "added to Wish List", Toast.LENGTH_LONG).show();
+                myposition = position;
+                showPopUp(view);
             }
         });
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainUser.this, bookName.get(position) + "added to borrow", Toast.LENGTH_LONG).show();
+    }
+    public void showPopUp(View v){
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.list_item);
+        popupMenu.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.listItem1:
+                BookDetail book = new BookDetail(bookName.get(myposition), bookAuthor.get(myposition), bookDate.get(myposition), bookBorrow.get(myposition));
+                ref = FirebaseDatabase.getInstance().getReference("wishlist").child(myUser);
+                ref.child(bookName.get(myposition)).setValue(book);
+                Toast.makeText(MainUser.this, bookName.get(myposition)+" added to wish list", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.listItem2:
+                String myBook = bookName.get(myposition);
+                ref = FirebaseDatabase.getInstance().getReference("book").child(myBook).child("borrowed");
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String myBorrow = snapshot.getValue().toString();
+                        if(!myBorrow.equals("none")){
+                            Toast.makeText(MainUser.this, "Sorry the book is not available", Toast.LENGTH_LONG).show();
+                        }else{
+                            ref.setValue(myUser);
+                            BookDetail book = new BookDetail(bookName.get(myposition), bookAuthor.get(myposition), bookDate.get(myposition), myUser);
+                            ref = FirebaseDatabase.getInstance().getReference("borrow");
+                            ref.child(myUser).child(bookName.get(myposition)).setValue(book);
+                            Toast.makeText(MainUser.this, bookName.get(myposition)+" added to borrow", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                return true;
+            default:
                 return false;
-            }
-        });
+        }
     }
     class customAdapter extends BaseAdapter{
 
