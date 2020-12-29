@@ -99,6 +99,22 @@ public class MainUser extends AppCompatActivity implements PopupMenu.OnMenuItemC
 
             }
         });
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), MainActivity.class);
+                Toast.makeText(MainUser.this, "Successful Log Out", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+            }
+        });
+        detail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), MainDetail.class);
+                intent.putExtra("username", myUser);
+                startActivity(intent);
+            }
+        });
         wishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
